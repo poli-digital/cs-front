@@ -1,0 +1,20 @@
+.component-loginpage .box-body{
+    height:100vh;
+    background-color: black;
+}
+
+.component-loginpage .shadown-blue-poli{
+    box-shadow: 10px 10px 1200px #00acbd;
+}
+
+.component-loginpage .shadown-black{
+    box-shadow: 10px 10px 1200px black;
+}
+
+.component-loginpage .radius{
+    border-radius: 10px;
+}
+
+.component-loginpage .bg-blue-poli{
+    background-color: #00acbd;
+}

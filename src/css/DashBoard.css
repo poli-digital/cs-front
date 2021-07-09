@@ -1,0 +1,12 @@
+.polics-main{
+    background-color: white
+}
+
+.polics-main input{
+    width: auto;
+    height: 2em;
+    border-radius:15px;
+    outline:0;
+    border: 1px solid black;
+    box-shadow: 10px 10px 100px black;
+}
