@@ -1,8 +1,8 @@
-.polics-main{
+.polics-dashboard{
     background-color: white
 }
 
-.polics-main input{
+.polics-dashboard input{
     width: auto;
     height: 2em;
     border-radius:15px;

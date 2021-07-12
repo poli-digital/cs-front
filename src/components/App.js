@@ -1,12 +1,12 @@
 import '../css/App.css';
 import LoginPage from './pages/LoginPage';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
-import DashBoard from './pages/DashBoard';
 import PrivateRouter from './PrivateRouter';
 import PublicRouter from './PublicRouter';
 import NotFound from './pages/NotFound';
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap/dist/js/bootstrap.min.js'
+import Main from './pages/Main';
 
 function App() {
   return (
@@ -19,7 +19,7 @@ function App() {
         </PublicRouter> 
         
         <PrivateRouter exact path="/">
-          <DashBoard/>
+          <Main/>
         </PrivateRouter>
         
         <Route>
