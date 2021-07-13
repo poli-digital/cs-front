@@ -1,33 +1,23 @@
-const headers = {
-    'Accept': 'application/json',
-    'Content-Type': 'application/json'
-}
+import { handleUrl } from "./utilsHelper";
+import axios from 'axios'
 
-export const fetchPost = async (url, body, token = null) => {
+const url = handleUrl(process.env.REACT_APP_URL_BACKEND);
+const token = localStorage.getItem('jwt');
 
-    try {
+function getInstancePolicsApi() {
 
-        return await fetch(url, {
-            method: 'POST',
-            headers: token ? {...headers, 'token' : token} : headers,
-            body: JSON.stringify(body)
-        });
-
-    } catch (err) {
-        return null;
+    let headers = {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
     }
+
+    if(token !== null) headers = {...headers, token}
+
+    return axios.create({
+        baseURL: url,
+        headers: headers
+    });
+    
 }
 
-export const fetchGet = async (url, token = null) => {
-
-    try {
-
-        return await fetch(url, {
-            method: 'GET',
-            headers: token ? {...headers, 'token' : token} : headers
-        });
-
-    } catch (err) {
-        return null;
-    }
-}
+export default getInstancePolicsApi;

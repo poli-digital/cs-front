@@ -2,8 +2,7 @@ import '../../css/LoginPage.css'
 import { useHistory } from "react-router-dom";
 import { useState } from 'react'
 import { login } from '../../utils/loginUtils';
-import { handleUrl } from '../../utils/utilsHelper';
-import { fetchPost } from '../../utils/policsApiRequestHelper';
+import getInstancePolicsApi from '../../utils/policsApiRequestHelper';
 
 function LoginPage() {
 
@@ -32,21 +31,20 @@ function LoginPage() {
 
     try {
 
-      let url = handleUrl(process.env.REACT_APP_URL_BACKEND);
+      const instancePolics = getInstancePolicsApi();
+      const response = await instancePolics.post('auth/login', {email:email, password:password});
 
-      const rawResponse = await fetchPost(`${url}auth/login`, { email: email, password: password })
+      if (!response || response?.status === 500) return alert('Não foi possível fazer o login, tente novamente');
 
-      if (!rawResponse || rawResponse?.status === 500) return;
-      
-      const content = await rawResponse.json();
-
-      if (rawResponse?.status === 200 && content?.token && content?.user) {
-        login(content.token, content.user);
-        history.push("/")
+      if (response?.status === 401) {
+        alert('Email inválido ou senha incorreta!');
       }
 
-      if (rawResponse?.status === 401) {
-        alert('Email inválido ou senha incorreta!');
+      const data = response.data;
+
+      if (response?.status === 200 && data?.token && data?.user) {
+        login(data.token, data.user);
+        history.push("/")
       }
 
     } catch (err) {
