@@ -8,8 +8,11 @@ function DashBoard() {
                     <div className="col-lg-3" id="coluna1">
 
                         <div className="container d-flex justify-content-center border border-dark">
-                            <div className="row">
+                            <div className="row d-flex flex-column">
                                 <input type="text" placeholder="Pesquisar empresa" />
+                                <br/>
+                                <button className="btn btn-outline-success btn-sm">Novo plugin <i className="bi bi-plus-lg"></i></button>
+                                <br/>
                             </div>
                         </div>
 

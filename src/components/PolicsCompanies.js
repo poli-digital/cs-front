@@ -1,4 +1,4 @@
-import {useState, useEffect} from 'react'
+import { useState, useEffect } from 'react'
 import getInstancePolicsApi from '../utils/policsApiRequestHelper';
 import { Modal } from 'bootstrap';
 
@@ -15,20 +15,13 @@ function PolicsCompanies() {
             setcompanies([]);
         }
     }, []);
-    
+
     const [companies, setcompanies] = useState([]);
     const [companyName, setcompanyName] = useState('');
     const [cnpj, setcnpj] = useState('');
 
-    function handleCompanyName(event) {
-        const text = event.target.value;
-        setcompanyName(text);    
-    }
-
-    function handleCnpj(event) {
-        const text = event.target.value;
-        setcnpj(text);
-    }
+    const [id, setid] = useState(null);
+    const [isEdit, setisEdit] = useState(false);
 
     async function getCompanies() {
 
@@ -43,24 +36,29 @@ function PolicsCompanies() {
 
     }
 
-    async function createANewCompany() {
+    async function createOrUpdateACompany() {
 
-        if(companyName === null || companyName === '') return alert('Você deve preencher o nome da empresa');
-        if(cnpj === null || cnpj === '') return alert('Você deve preencher o campo CNPJ da empresa');
-        if(isNaN(cnpj)) return alert('O campo CNPJ deve conter apenas números');
-        if(cnpj.length !== 14) return alert('O campo CNJP deve conter 14 caracteres númericos')
+        if (companyName === null || companyName === '') return alert('Você deve preencher o nome da empresa');
+        if (cnpj === null || cnpj === '') return alert('Você deve preencher o campo CNPJ da empresa');
+        if (isNaN(cnpj)) return alert('O campo CNPJ deve conter apenas números');
+        if (cnpj.length !== 14) return alert('O campo CNJP deve conter 14 caracteres númericos');
 
-        try{
-            const response = await instancePolics.post('companies', {"name": companyName,"cnpj": cnpj});
+        const company = {
+            name: companyName,
+            cnpj: cnpj
+        }
+
+        try {
+            const response = isEdit ? await instancePolics.put(`companies/${id}`, company) : await instancePolics.post('companies', company);
             if (!response) return alert('Falha na requisição');
-            if(response.status === 500) return alert('Erro no servidor');
-            if(response.status === 401) return alert('Você precisa de permissão para continuar com esta ação');
-            if(response.status === 200 || response.status === 201){
+            if (response.status === 500) return alert('Erro no servidor');
+            if (response.status === 401) return alert('Você precisa de permissão para continuar com esta ação');
+            if (response.status === 200 || response.status === 201) {
                 modal.hide();
                 getCompanies();
-                return alert('Empresa criada com sucesso!');
+                return isEdit ? alert('Empresa foi modificada com sucesso!') : alert('Empresa criada com sucesso!');
             }
-        }catch(err){
+        } catch (err) {
             return alert('Erro no servidor');
         }
 
@@ -68,30 +66,26 @@ function PolicsCompanies() {
 
     async function removeACompany(id, name) {
 
-        if(id === 1)return alert(`Você não pode excluir a empresa de id 1`)
+        if (id === 1) return alert(`Você não pode excluir a empresa de id 1`)
 
         const confirmDelete = window.confirm(`Você realmente deseja excluir a empresa ${name}?`);
-        if(!confirmDelete) return;
-        
-        try{
+        if (!confirmDelete) return;
+
+        try {
             const response = await instancePolics.delete(`companies/${id}`);
             if (!response) return alert('Falha na requisição');
-            if(response.status === 500) return alert('Erro no servidor');
-            if(response.status === 401) return alert('Você precisa de permissão para continuar com esta ação');
-            if(response.status === 404) return alert('Empresa não encontrada');
-            if(response.status === 200 || response.status === 201){
+            if (response.status === 500) return alert('Erro no servidor');
+            if (response.status === 401) return alert('Você precisa de permissão para continuar com esta ação');
+            if (response.status === 404) return alert('Empresa não encontrada');
+            if (response.status === 200 || response.status === 201) {
                 setcompanies(companies.filter(item => item.id !== id));
                 return alert('Empresa excluida com sucesso!');
             }
-            
-        }catch(err){
+
+        } catch (err) {
             return alert('Erro no servidor');
         }
-        
-    }
 
-    async function editACompany(id) {
-        console.log(id);
     }
 
     function clearSets() {
@@ -99,8 +93,20 @@ function PolicsCompanies() {
         setcnpj('');
     }
 
-    function openModal() {
-        clearSets()
+    function editSets(item) {
+        setisEdit(true);
+        setid(item.id);
+        setcompanyName(item.name);
+        setcnpj(item.cnpj);
+    }
+
+    function openModal(item = null) {
+        if (item) {
+            editSets(item);
+        } else {
+            clearSets();
+            setisEdit(false);
+        }
         modal.show();
     }
 
@@ -112,11 +118,11 @@ function PolicsCompanies() {
         <div className="row">
             <div className="d-flex flex-row justify-content-between">
                 <h5>Empresas</h5>
-                <button className="btn btn-outline-success btn-sm ms-3" type="button" onClick={openModal}>
+                <button className="btn btn-outline-success btn-sm ms-3" type="button" onClick={() => { openModal() }}>
                     Nova empresa
                 </button>
             </div>
-            
+
             <div className="table-responsive mt-3">
                 <table className="table table-bordered table-sm border-dark">
                     <thead className="table-dark">
@@ -136,10 +142,10 @@ function PolicsCompanies() {
                                 <td>{item.cnpj}</td>
                                 <td>
                                     <div className="d-flex flex-row justify-content-end">
-                                        <button onClick={()=>{removeACompany(item.id, item.name)}} className="btn btn-outline-danger btn-sm me-1">
+                                        <button onClick={() => { removeACompany(item.id, item.name) }} className="btn btn-outline-danger btn-sm me-1">
                                             <i className="bi bi-trash"></i>
                                         </button>
-                                        <button onClick={()=>{editACompany(item.id)}} className="btn btn-outline-warning btn-sm me-1">
+                                        <button onClick={() => { openModal(item) }} className="btn btn-outline-warning btn-sm me-1">
                                             <i className="bi bi-pencil-fill"></i>
                                         </button>
                                     </div>
@@ -159,18 +165,18 @@ function PolicsCompanies() {
                             <button type="button" className="btn-close" onClick={closeModal}></button>
                         </div>
                         <div className="modal-body">
-                            <div className="input-group">
+                            <div className="input-group input-group-sm">
                                 <span className="input-group-text">Nome</span>
-                                <input onChange={handleCompanyName} value={companyName} type="text" aria-label="Nome da empresa" className="form-control" />
+                                <input onChange={(event) => { setcompanyName(event.target.value) }} value={companyName} type="text" aria-label="Nome da empresa" className="form-control" />
                             </div>
                             <br />
-                            <div className="input-group">
+                            <div className="input-group input-group-sm">
                                 <span className="input-group-text">CNPJ</span>
-                                <input onChange={handleCnpj} value={cnpj} type="text" aria-label="Cnpj da empresa" className="form-control" />
+                                <input onChange={(event) => { setcnpj(event.target.value) }} value={cnpj} type="text" aria-label="Cnpj da empresa" className="form-control" />
                             </div>
                         </div>
                         <div className="modal-footer">
-                            <button onClick={createANewCompany} type="button" className="btn btn-primary">Criar nova Empresa</button>
+                            <button onClick={createOrUpdateACompany} type="button" className="btn btn-outline-success btn-sm">Salvar</button>
                         </div>
                     </div>
                 </div>
