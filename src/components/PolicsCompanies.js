@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react'
 import getInstancePolicsApi from '../utils/policsApiRequestHelper';
 import { Modal } from 'bootstrap';
 
-const instancePolics = getInstancePolicsApi();
 let modal;
 
 function PolicsCompanies() {
@@ -25,7 +24,7 @@ function PolicsCompanies() {
 
     async function getCompanies() {
 
-        const response = await instancePolics.get('companies');
+        const response = await getInstancePolicsApi().get('companies');
 
         if (!response || response?.status === 401) return;
 
@@ -49,7 +48,7 @@ function PolicsCompanies() {
         }
 
         try {
-            const response = isEdit ? await instancePolics.put(`companies/${id}`, company) : await instancePolics.post('companies', company);
+            const response = isEdit ? await getInstancePolicsApi().put(`companies/${id}`, company) : await getInstancePolicsApi().post('companies', company);
             if (!response) return alert('Falha na requisição');
             if (response.status === 500) return alert('Erro no servidor');
             if (response.status === 401) return alert('Você precisa de permissão para continuar com esta ação');
@@ -72,7 +71,7 @@ function PolicsCompanies() {
         if (!confirmDelete) return;
 
         try {
-            const response = await instancePolics.delete(`companies/${id}`);
+            const response = await getInstancePolicsApi().delete(`companies/${id}`);
             if (!response) return alert('Falha na requisição');
             if (response.status === 500) return alert('Erro no servidor');
             if (response.status === 401) return alert('Você precisa de permissão para continuar com esta ação');

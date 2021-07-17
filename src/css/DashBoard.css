@@ -2,7 +2,7 @@
     background-color: white
 }
 
-.polics-dashboard input{
+.polics-dashboard #inputPesquisa{
     width: auto;
     height: 2em;
     border-radius:15px;

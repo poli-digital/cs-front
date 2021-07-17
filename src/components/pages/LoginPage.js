@@ -11,22 +11,6 @@ function LoginPage() {
   const [email, setemail] = useState('');
   const [password, setpassword] = useState('');
 
-  function handleChangeEmail(event) {
-    let text = event.target.value;
-    setemail(text);
-  }
-
-  function handleChangePassword(event) {
-    let text = event.target.value;
-    setpassword(text);
-  }
-
-  function handleEnterInPassword(event) {
-    if (event.key === 'Enter') {
-      signin();
-    }
-  }
-
   async function signin() {
 
     try {
@@ -48,7 +32,16 @@ function LoginPage() {
       }
 
     } catch (err) {
-      alert('Erro ao fazer login, tente novamente mais tarde.');
+      //console.log(err.toJSON());
+      //console.log(err.request);
+      //console.log(err.config);
+      //console.log(error.response.data);
+      //console.log(error.response.status);
+      //console.log(error.response.headers);
+      let message = err.response?.data?.message;
+      message = message ? message : 'Erro ao fazer login, tente novamente mais tarde.'
+      
+      alert(message);
     }
 
   }
@@ -64,12 +57,12 @@ function LoginPage() {
             </div>
             <div className="form-group">
               <small>Insira o seu e-mail</small>
-              <input autoFocus onChange={handleChangeEmail} type="email" className="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="E-mail" autoComplete="off"/>
+              <input autoFocus onChange={(event)=>{setemail(event.target.value)}} type="email" className="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="E-mail" autoComplete="off"/>
             </div>
             <br />
             <div className="form-group">
               <small>Insira a sua senha</small>
-              <input onChange={handleChangePassword} onKeyPress={handleEnterInPassword} type="password" className="form-control" id="exampleInputPassword1" placeholder="Senha" autoComplete="off"/>
+              <input onChange={(event)=>{setpassword(event.target.value)}} onKeyPress={(event)=>{if (event.key === 'Enter') signin()}} type="password" className="form-control" id="exampleInputPassword1" placeholder="Senha" autoComplete="off"/>
             </div>
             <br />
             <div className="form-group">

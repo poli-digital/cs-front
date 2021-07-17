@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react'
 import getInstancePolicsApi from '../utils/policsApiRequestHelper';
 import { Modal } from 'bootstrap';
 
-const instancePolics = getInstancePolicsApi();
 let modal;
 
 function PolicsUsers() {
@@ -32,7 +31,7 @@ function PolicsUsers() {
     const [isEdit, setisEdit] = useState(false);
 
     async function getUsers() {
-        const response = await instancePolics.get('users');
+        const response = await getInstancePolicsApi().get('users');
 
         if (!response || response?.status === 401) return;
 
@@ -44,7 +43,7 @@ function PolicsUsers() {
 
     async function getCompanies() {
 
-        const response = await instancePolics.get('companies');
+        const response = await getInstancePolicsApi().get('companies');
 
         if (!response || response?.status === 401) return;
 
@@ -57,7 +56,7 @@ function PolicsUsers() {
 
     async function getRoles() {
 
-        const response = await instancePolics.get('roles');
+        const response = await getInstancePolicsApi().get('roles');
 
         if (!response || response?.status === 401) return;
 
@@ -87,7 +86,7 @@ function PolicsUsers() {
 
         try {
 
-            const response = isEdit ? await instancePolics.put(`users/${id}`, userInput) : await instancePolics.post('users', userInput);
+            const response = isEdit ? await getInstancePolicsApi().put(`users/${id}`, userInput) : await getInstancePolicsApi().post('users', userInput);
             if (!response) return alert('Falha na requisição');
             if (response.status === 500) return alert('Erro no servidor');
             if (response.status === 401) return alert('Você precisa de permissão para continuar com esta ação');
@@ -110,7 +109,7 @@ function PolicsUsers() {
         if (!confirmDelete) return;
 
         try {
-            const response = await instancePolics.delete(`users/${id}`);
+            const response = await getInstancePolicsApi().delete(`users/${id}`);
             if (!response) return alert('Falha na requisição');
             if (response.status === 500) return alert('Erro no servidor');
             if (response.status === 401) return alert('Você precisa de permissão para continuar com esta ação');

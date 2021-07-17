@@ -10,11 +10,10 @@ function Admin() {
             <div className="container">
 
                 <PolicsCompanies />
-                <br/>
+                <br />
                 <PolicsUsers />
-                <br/>
+                <br />
                 <PolicsConfigPlugins />
-
 
             </div>
 

@@ -1,6 +1,27 @@
 import '../../css/DashBoard.css'
+import {useState, useEffect} from  'react'
+import TableCompany from '../TableCompany';
+import { getInstancePiperunApi } from '../../utils/policsApiRequestHelper';
 
 function DashBoard() {
+
+    const [inputSearch, setinputSearch] = useState('');
+    const [companies, setcompanies] = useState([]);
+
+    async function search() {
+        const instancePiperunApi = getInstancePiperunApi();
+        try {
+            const response = await instancePiperunApi.get(`companies?name=${inputSearch}`);
+            if (!response) return;
+            console.log(response.data.data);
+            setcompanies(response.data.data);
+        } catch (err) {
+            let message = err.response?.data?.message;
+            message = message ? message : 'Erro ao listar empresas'
+            console.log(message);
+        }
+    }
+
     return (
         <div className="polics-dashboard">
             <div className="container-fluid">
@@ -9,9 +30,7 @@ function DashBoard() {
 
                         <div className="container d-flex justify-content-center border border-dark">
                             <div className="row d-flex flex-column">
-                                <input type="text" placeholder="Pesquisar empresa" />
-                                <br/>
-                                <button className="btn btn-outline-success btn-sm">Novo plugin <i className="bi bi-plus-lg"></i></button>
+                                <input type="text" value={inputSearch} onChange={(event)=>{setinputSearch(event.target.value)}} onKeyPress={(event)=>{if (event.key === 'Enter') search()}} placeholder="Pesquisar empresa" id="inputPesquisa" />
                                 <br/>
                             </div>
                         </div>
@@ -67,6 +86,10 @@ function DashBoard() {
 
                             <div className="row mt-3">
                                 <h5>Empresas</h5>
+
+                                <TableCompany companies={companies}/>
+
+
                                 <table className="table table-bordered table-sm border-dark">
                                     <thead className="table-dark">
                                         <tr>
