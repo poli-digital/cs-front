@@ -162,7 +162,7 @@ function PolicsConfigPlugins() {
             </div>
 
             <div className="table-responsive mt-3">
-                <table className="table table-bordered table-sm border-dark">
+                <table className="table table-hover table-sm">
                     <thead className="table-dark">
                         <tr>
                             <th scope="col">id</th>

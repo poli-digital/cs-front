@@ -1,0 +1,9 @@
+.polics-tableactivitycompany {
+    padding: 0;
+    margin: 0;
+}
+
+.polics-table-overflow-400 {
+    max-height:400px;
+    overflow-y:auto;
+}
