@@ -1,9 +1,11 @@
 import '../../css/DashBoard.css'
 import { useState, useEffect } from 'react'
 import TableCompany from '../TableCompany';
-import { getInstancePiperunApi, getInstancePolichatApi } from '../../utils/policsApiRequestHelper';
+import { getConfigPiperun, getInstancePiperunApi, getInstancePolichatApi, getConfigPolichat } from '../../utils/policsApiRequestHelper';
 import TableActivityCompany from '../TableActivityCompany';
 import TableContacts from '../TableContacts';
+import BlockPluginPiperun from '../BlockPluginPiperun';
+import BlockPluginPolichat from '../BlockPluginPolichat';
 
 function DashBoard() {
 
@@ -12,16 +14,43 @@ function DashBoard() {
     const [companies, setcompanies] = useState([]);
     const [activities, setactivities] = useState([]);
     const [contacts, setcontacts] = useState([]);
+    const [configPiperun, setconfigPiperun] = useState(null);
+    const [configPolichat, setconfigPolichat] = useState(null);
+
+    useEffect(async () => {
+        mount();
+        return () => {
+
+        }
+    }, []);
+
+    async function mount() {
+        try {
+            const newConfigPiperun = await getConfigPiperun();
+            if (newConfigPiperun) setconfigPiperun(newConfigPiperun);
+
+            const newConfigPolichat = await getConfigPolichat();
+            if (newConfigPolichat) setconfigPolichat(newConfigPolichat)
+        } catch (error) {
+            console.log('Erro ao encontrar configuração do piperun')
+        }
+
+    }
+
+    function unmount() {
+        setconfigPiperun(null);
+        setconfigPolichat(null);
+    }
 
     async function searchCompany() {
         try {
-            const response = await getInstancePiperunApi().get(`companies?name=${inputSearch}`);
+            const response = await getInstancePiperunApi(configPiperun.token).get(`companies?name=${inputSearch}`);
             if (!response) return;
             if (response.data.data instanceof Array) setcompanies(response.data.data);
         } catch (err) {
             let message = err.response?.data?.message;
             message = message ? message : 'Erro ao listar empresas'
-            console.log(message);
+            console.log(message, err);
         }
     }
 
@@ -31,19 +60,16 @@ function DashBoard() {
     }
 
     async function searchActivities(item) {
-
-        const companyId = item.id;
-
         try {
-            //const url = `deals?company_id=${companyId}&pipeline_id=${grupo.id}&with=owner,stage,pipeline,notes`
+            const companyId = item.id;
             const url = `deals?company_id=${companyId}&with=owner,stage,pipeline,notes`
-            const response = await getInstancePiperunApi().get(url);
+            const response = await getInstancePiperunApi(configPiperun.token).get(url);
             if (!response) return;
             if (response.data.data instanceof Array) setactivities(response.data.data);
         } catch (err) {
             let message = err.response?.data?.message;
             message = message ? message : 'Erro ao listar chamados'
-            console.log(message);
+            console.log(message, err);
         }
     }
 
@@ -61,19 +87,22 @@ function DashBoard() {
             //Obtem uma lista com número dos contatos, removendo os elementos repetidos
             const contactPhones = Array.from(new Set(arrayObjContactPhone.map(item => item.phone.slice(-8))).values());
 
-
+            /**
+             * Efetua requisição na api do polichat buscando números de telefone especificos e
+             * remove números repetidos, essa comparação é feita pelo (id do chat)
+             */
             async function handleDoubleContacts() {
 
                 let arrayContacts = []
 
-                for(let i = 0; i < companiesToSearchInPolichat.length; i++){
-                    for(let j = 0; j < contactPhones.length; j++){
-                        const response = await getInstancePolichatApi().get(`${companiesToSearchInPolichat[i].companyIdPolichat}/contacts?phone=${contactPhones[j]}`);
+                for (let i = 0; i < companiesToSearchInPolichat.length; i++) {
+                    for (let j = 0; j < contactPhones.length; j++) {
+                        const response = await getInstancePolichatApi(configPolichat.token).get(`${companiesToSearchInPolichat[i].companyIdPolichat}/contacts?phone=${contactPhones[j]}`);
                         console.log(response);
-                        if(response){
+                        if (response) {
                             const contactsJson = response.data.data;
-    
-                            for(let k = 0; k < contactsJson.length; k++){
+
+                            for (let k = 0; k < contactsJson.length; k++) {
                                 const contactJsonModified = { ...contactsJson[k], ...companiesToSearchInPolichat[i] };
                                 if (arrayContacts.find(item => item.id == contactsJson[k].id) == undefined) {
                                     arrayContacts.push(contactJsonModified);
@@ -86,15 +115,8 @@ function DashBoard() {
                 return arrayContacts;
             }
 
-            
-
             let handledContact = await handleDoubleContacts();
             setcontacts(handledContact);
-            console.log('handledContact', handledContact);
-            
-            //let handledContact = await handleDoubleContacts();
-            //console.log('handledContact', handledContact);
-            //setcontacts(handledContact);
 
         } catch (err) {
             let message = err.response?.data?.message;
@@ -165,52 +187,9 @@ function DashBoard() {
                                 </div>
                             </div>
 
-                            <div className="row mt-3">
-                                <h5>Empresas</h5>
-                                <TableCompany companies={companies} callbackSearchDataOfSpecificCompany={searchDataOfSpecificCompany} />
-                            </div>
+                            <BlockPluginPiperun config={configPiperun} companies={companies} activities={activities} callbackSearchDataOfSpecificCompany={searchDataOfSpecificCompany} />
 
-
-                            <div className="row mt-3">
-                                <h5>Atividades</h5>
-                                <TableActivityCompany activities={activities} />
-                            </div>
-
-                            <div className="row mt-3">
-                                <h5>Contatos</h5>
-
-                                <TableContacts contacts={contacts} />
-
-                                <table className="table table-bordered table-sm border-dark">
-                                    <thead className="table-dark">
-                                        <tr>
-                                            <th scope="col">#</th>
-                                            <th scope="col">First</th>
-                                            <th scope="col">Last</th>
-                                            <th scope="col">Handle</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <th scope="row">1</th>
-                                            <td>Mark</td>
-                                            <td>Otto</td>
-                                            <td>@mdo</td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row">2</th>
-                                            <td>Jacob</td>
-                                            <td>Thornton</td>
-                                            <td>@fat</td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row">3</th>
-                                            <td colSpan="2">Larry the Bird</td>
-                                            <td>@twitter</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
+                            <BlockPluginPolichat config={configPolichat} contacts={contacts} />
 
                         </div>
                     </div>

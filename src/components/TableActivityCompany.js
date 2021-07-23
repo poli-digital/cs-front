@@ -24,14 +24,14 @@ function TableActivityCompany(props) {
                 <thead className="table-dark">
                     <tr>
                         <th className="text-center">#</th>
-                        <th className="text-center">Atividade</th>
-                        <th className="text-center">Titulo</th>
-                        <th className="text-center">Notas</th>
-                        <th className="text-center">Criação</th>
-                        <th className="text-center">Dono</th>
-                        <th className="text-center">Etapa</th>
-                        <th className="text-center">Funil</th>
-                        <th className="text-center">Status</th>
+                        <th className="text-center" hidden={!(props.config?.field_activity)}>Atividade</th>
+                        <th className="text-center" hidden={!(props.config?.field_title)}>Titulo</th>
+                        <th className="text-center" hidden={!(props.config?.field_notes)}>Notas</th>
+                        <th className="text-center" hidden={!(props.config?.field_creation)}>Criação</th>
+                        <th className="text-center" hidden={!(props.config?.field_owner)}>Dono</th>
+                        <th className="text-center" hidden={!(props.config?.field_stage)}>Etapa</th>
+                        <th className="text-center" hidden={!(props.config?.field_funnel)}>Funil</th>
+                        <th className="text-center" hidden={!(props.config?.field_status)}>Status</th>
                         <th></th>
                     </tr>
                 </thead>
@@ -39,14 +39,14 @@ function TableActivityCompany(props) {
                     {props.activities.map((item) => {
                         return <tr key={item.id}>
                             <td className="text-center">#</td>
-                            <td className="text-center">{item.id}</td>
-                            <td className="text-center">{item.title}</td>
-                            <td className="text-center">Notas</td>
-                            <td className="text-center">{item.created_at}</td>
-                            <td className="text-center">{item.owner.name}</td>
-                            <td className="text-center">{item.stage.name}</td>
-                            <td className="text-center">{item.pipeline.name}</td>
-                            <td className="text-center">{item.status}</td>
+                            <td className="text-center" hidden={!(props.config?.field_activity)}>{item.id}</td>
+                            <td className="text-center" hidden={!(props.config?.field_title)}>{item.title}</td>
+                            <td className="text-center" hidden={!(props.config?.field_notes)}>Notas</td>
+                            <td className="text-center" hidden={!(props.config?.field_creation)}>{item.created_at}</td>
+                            <td className="text-center" hidden={!(props.config?.field_owner)}>{item.owner.name}</td>
+                            <td className="text-center" hidden={!(props.config?.field_stage)}>{item.stage.name}</td>
+                            <td className="text-center" hidden={!(props.config?.field_funnel)}>{item.pipeline.name}</td>
+                            <td className="text-center" hidden={!(props.config?.field_status)}>{item.status}</td>
                             <td className="text-center">Pipe</td>
                         </tr>
                     })}

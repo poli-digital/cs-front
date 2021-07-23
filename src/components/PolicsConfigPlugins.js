@@ -178,7 +178,7 @@ function PolicsConfigPlugins() {
                             return <tr key={item.id}>
                                 <th>{item.id}</th>
                                 <td>{item.title}</td>
-                                <td>{item.token}</td>
+                                <td>{item.token?.length > 10 ? `${item.token.slice(0, 10)}...` : item.token}</td> 
                                 <td>{item.config_plugins_company.name}</td>
                                 <td>{item.config_plugins_plugin.name}</td>
                                 <td>

@@ -22,11 +22,11 @@ function TableContacts(props) {
             <thead className="table-dark">
                 <tr>
                     <th className="text-center">#</th>
-                    <th className="text-center">Id</th>
-                    <th className="text-center">Nome</th>
-                    <th className="text-center">Número</th>
-                    <th className="text-center">Empresa</th>
-                    <th className="text-center">Conversa</th>
+                    <th className="text-center" hidden={!(props.config?.field_id_contact)}>Id</th>
+                    <th className="text-center" hidden={!(props.config?.field_name)}>Nome</th>
+                    <th className="text-center" hidden={!(props.config?.field_number)}>Número</th>
+                    <th className="text-center" hidden={!(props.config?.field_company)}>Empresa</th>
+                    <th className="text-center" hidden={!(props.config?.field_talk)}>Conversa</th>
                     <th></th>
                 </tr>
             </thead>
@@ -34,11 +34,11 @@ function TableContacts(props) {
                 {props.contacts.map((item) => {
                     return <tr key={item.id}>
                         <td className="text-center">#</td>
-                        <td className="text-center">{item.id}</td>
-                        <td className="text-center">{item.name}</td>
-                        <td className="text-center">{item.phone}</td>
-                        <td className="text-center">{item.companyNamePolichat}</td>
-                        <td className="text-center">Conversa</td>
+                        <td className="text-center" hidden={!(props.config?.field_id_contact)}>{item.id}</td>
+                        <td className="text-center" hidden={!(props.config?.field_name)}>{item.name}</td>
+                        <td className="text-center" hidden={!(props.config?.field_number)}>{item.phone}</td>
+                        <td className="text-center" hidden={!(props.config?.field_company)}>{item.companyNamePolichat}</td>
+                        <td className="text-center" hidden={!(props.config?.field_talk)}>Conversa</td>
                         <td className="text-center">Chat</td>
                     </tr>
                 })}
